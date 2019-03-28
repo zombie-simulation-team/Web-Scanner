@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1553450335 source:/home/elnano/Codeblocks/Web Scanner/wx_pch.h
+1553450335 source:/home/elnano/git/Web-Scanner/wx_pch.h
 	<wx/wxprec.h>
 	<wx/wx.h>
 
@@ -1641,20 +1641,20 @@
 1522244266 /usr/include/wx-3.0/wx/gtk/mdi.h
 	"wx/frame.h"
 
-1553459547 source:/home/elnano/Codeblocks/Web Scanner/Web_ScannerApp.cpp
+1553459547 source:/home/elnano/git/Web-Scanner/Web_ScannerApp.cpp
 	"wx_pch.h"
 	"Web_ScannerApp.h"
 	"Web_ScannerMain.h"
 	<wx/image.h>
 
-1553450335 /home/elnano/Codeblocks/Web Scanner/wx_pch.h
+1553450335 /home/elnano/git/Web-Scanner/wx_pch.h
 	<wx/wxprec.h>
 	<wx/wx.h>
 
-1553450335 /home/elnano/Codeblocks/Web Scanner/Web_ScannerApp.h
+1553450335 /home/elnano/git/Web-Scanner/Web_ScannerApp.h
 	<wx/app.h>
 
-1553706915 /home/elnano/Codeblocks/Web Scanner/Web_ScannerMain.h
+1553715351 /home/elnano/git/Web-Scanner/Web_ScannerMain.h
 	<wx/sizer.h>
 	<wx/button.h>
 	<wx/menu.h>
@@ -1664,44 +1664,16 @@
 	<wx/textctrl.h>
 	<wx/listbox.h>
 
-1553713245 source:/home/elnano/Codeblocks/Web Scanner/Web_ScannerMain.cpp
+1553788078 source:/home/elnano/git/Web-Scanner/Web_ScannerMain.cpp
 	"wx_pch.h"
 	"Web_ScannerMain.h"
 	<wx/msgdlg.h>
 	<wx/url.h>
 	<wx/stream.h>
+	<wx/sstream.h>
 	<wx/textfile.h>
 	<wx/string.h>
 	<wx/intl.h>
-
-1522244266 /usr/include/wx-3.0/wx/hyperlink.h
-	"wx/defs.h"
-	"wx/control.h"
-	"wx/gtk/hyperlink.h"
-	"wx/msw/hyperlink.h"
-	"wx/generic/hyperlink.h"
-
-1522244266 /usr/include/wx-3.0/wx/gtk/hyperlink.h
-	"wx/generic/hyperlink.h"
-
-1522244266 /usr/include/wx-3.0/wx/generic/hyperlink.h
-
-1522244266 /usr/include/wx-3.0/wx/webview.h
-	"wx/defs.h"
-	"wx/control.h"
-	"wx/event.h"
-	"wx/sstream.h"
-	"wx/sharedptr.h"
-	"wx/vector.h"
-	"wx/osx/webviewhistoryitem_webkit.h"
-	"wx/gtk/webviewhistoryitem_webkit.h"
-	"wx/msw/webviewhistoryitem_ie.h"
-
-1522244266 /usr/include/wx-3.0/wx/sstream.h
-	"wx/stream.h"
-
-1522244266 /usr/include/wx-3.0/wx/gtk/webviewhistoryitem_webkit.h
-	"wx/setup.h"
 
 1522244266 /usr/include/wx-3.0/wx/url.h
 	"wx/defs.h"
@@ -1738,6 +1710,9 @@
 	"wx/protocol/protocol.h"
 	"wx/buffer.h"
 
+1522244266 /usr/include/wx-3.0/wx/sstream.h
+	"wx/stream.h"
+
 1522244266 /usr/include/wx-3.0/wx/textfile.h
 	"wx/defs.h"
 	"wx/textbuf.h"
@@ -1749,31 +1724,4 @@
 	"wx/convauto.h"
 	"wx/string.h"
 	"wx/dynarray.h"
-
-1553450335 source:/home/elnano/git/Web-Scanner/wx_pch.h
-	<wx/wxprec.h>
-	<wx/wx.h>
-
-1553459547 source:/home/elnano/git/Web-Scanner/Web_ScannerApp.cpp
-	"wx_pch.h"
-	"Web_ScannerApp.h"
-	"Web_ScannerMain.h"
-	<wx/image.h>
-
-1553450335 /home/elnano/git/Web-Scanner/wx_pch.h
-	<wx/wxprec.h>
-	<wx/wx.h>
-
-1553450335 /home/elnano/git/Web-Scanner/Web_ScannerApp.h
-	<wx/app.h>
-
-1553715351 /home/elnano/git/Web-Scanner/Web_ScannerMain.h
-	<wx/sizer.h>
-	<wx/button.h>
-	<wx/menu.h>
-	<wx/panel.h>
-	<wx/statusbr.h>
-	<wx/frame.h>
-	<wx/textctrl.h>
-	<wx/listbox.h>
 
