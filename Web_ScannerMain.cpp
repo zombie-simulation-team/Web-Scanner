@@ -143,7 +143,6 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
     wordFile.Open(wordFileName);
 
     wxString line = urlFile.GetFirstLine();
-    wxString word = wordFile.GetFirstLine();
 
     wxArrayString strings;
 
@@ -155,33 +154,42 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
         if (url.GetError() == wxURL_NOERR)
         {
             int wordCount = 0;
-            wxString data;                                           // to save webdata                                      // to keep track of word match
+            wxString data;
 
-            wxInputStream *in_stream = url.GetInputStream();         // reading url
+            wxInputStream *in_stream = url.GetInputStream();
 
-            if(in_stream && in_stream->IsOk())                       // reading was ok
+            if(in_stream && in_stream->IsOk())
             {
-                wxStringOutputStream html_stream(&data);             // output stream used to save data to the data string
+                wxStringOutputStream html_stream(&data);
 
                 in_stream->Read(html_stream);
-                size_t pos = 0;
 
-                while(pos < data.Length())
+                wordFile.GoToLine(0);
+                wxString word = wordFile.GetFirstLine();
+
+                do
                 {
-                    pos = data.find(word, pos + word.Length());
+                    size_t pos = 0;
 
-                    if(pos != wxNOT_FOUND){
-                        wordCount++;
+                    while(pos < data.Length())
+                    {
+                        pos = data.find(word, pos + word.Length());
+
+                        if(pos != wxNOT_FOUND){
+                            wordCount++;
+                        }
                     }
-                }
+
+                    word = wordFile.GetNextLine();
+                } while(!wordFile.Eof());
+
                 strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
             }
             delete in_stream;
         }
 
         line = urlFile.GetNextLine();
-        word = wordFile.GetNextLine();
-    } while(!urlFile.Eof() && !wordFile.Eof());
+    } while(!urlFile.Eof());
 
     urlFile.Close();
     wordFile.Close();
