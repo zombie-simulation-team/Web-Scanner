@@ -76,19 +76,19 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
     wxMenuBar* MenuBar1;
     wxMenu* Menu2;
 
-    Create(parent, id, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
-    SetClientSize(wxSize(515,295));
+    Create(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
+    SetClientSize(wxSize(511,287));
     BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    Main_Panel = new wxPanel(this, ID_MAIN_PANEL, wxDefaultPosition, wxSize(505,285), wxTAB_TRAVERSAL, _T("ID_MAIN_PANEL"));
-    Go_Button = new wxButton(Main_Panel, ID_GO_BUTTON, _("GO"), wxPoint(96,256), wxDefaultSize, 0, wxDefaultValidator, _T("ID_GO_BUTTON"));
+    Main_Panel = new wxPanel(this, ID_MAIN_PANEL, wxDefaultPosition, wxSize(529,349), wxTAB_TRAVERSAL, _T("ID_MAIN_PANEL"));
+    Go_Button = new wxButton(Main_Panel, ID_GO_BUTTON, _("GO"), wxPoint(152,256), wxDefaultSize, 0, wxDefaultValidator, _T("ID_GO_BUTTON"));
     Load_Url_Button = new wxButton(Main_Panel, ID_BUTTON1, _("URL"), wxPoint(360,16), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
     Load_Url_Button->SetToolTip(_("Load URL List"));
     Load_Word_Button = new wxButton(Main_Panel, ID_BUTTON2, _("Word"), wxPoint(360,56), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     Load_Word_Button->SetToolTip(_("Load Word List"));
-    Quit_Button = new wxButton(Main_Panel, ID_QUIT_BUTTON, _("Quit"), wxPoint(328,256), wxDefaultSize, 0, wxDefaultValidator, _T("ID_QUIT_BUTTON"));
+    Quit_Button = new wxButton(Main_Panel, ID_QUIT_BUTTON, _("Quit"), wxPoint(320,256), wxDefaultSize, 0, wxDefaultValidator, _T("ID_QUIT_BUTTON"));
     URL_TextCtrl = new wxTextCtrl(Main_Panel, ID_TEXTCTRL1, wxEmptyString, wxPoint(16,16), wxSize(328,27), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
     Word_TextCtrl = new wxTextCtrl(Main_Panel, ID_WORD_TEXTCTRL, wxEmptyString, wxPoint(16,56), wxSize(328,27), 0, wxDefaultValidator, _T("ID_WORD_TEXTCTRL"));
-    ListBox = new wxListBox(Main_Panel, ID_LISTBOX, wxPoint(8,128), wxSize(336,104), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX"));
+    ListBox = new wxListBox(Main_Panel, ID_LISTBOX, wxPoint(8,128), wxSize(416,120), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX"));
     ProgressBar = new wxGauge(Main_Panel, ID_PROGRESSBAR, 100, wxPoint(16,96), wxSize(320,28), 0, wxDefaultValidator, _T("ID_PROGRESSBAR"));
     BoxSizer1->Add(Main_Panel, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     SetSizer(BoxSizer1);
@@ -150,20 +150,26 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
     int lineCountPercent = ProgressBar->GetRange() / urlFile.GetLineCount();
 
     wxString line = urlFile.GetFirstLine();
-
-    wxArrayString strings;
+    int urlCount = 1;
+    //wxArrayString strings;
     ProgressBar->SetValue(0); // clear the gauge
     do
     {
+
         wxURL url(line);
+        wxArrayString urlString;
+        this->ListBox->Append("URL "+wxString::Format(wxT("%i"),urlCount) + " >>  " + line);
+        this->ListBox->Append("\tWORDS");
 
         //checks if there is no error in the URL.
         if (url.GetError() == wxURL_NOERR)
         {
+            urlCount++;
             int wordCount = 0;
             wxString data;
 
             wxInputStream *in_stream = url.GetInputStream();
+            wxArrayString strings;
 
             if(in_stream && in_stream->IsOk())
             {
@@ -186,12 +192,14 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
                             wordCount++;
                         }
                     }
-                    strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
+                    strings.Add("\t  "+wxString::Format(wxT("%s"),word) + wxString::Format(wxT("\t%i"), wordCount));
+                    //strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
                     word = wordFile.GetNextLine();
                 } while(!wordFile.Eof());
 
                 //strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
             }
+            this->ListBox->Append(strings);
             delete in_stream;
         }
         ProgressBar->SetValue((ProgressBar->GetValue()+lineCountPercent)); // update progress bar
@@ -203,7 +211,7 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
     urlFile.Close();
     wordFile.Close();
 
-    this->ListBox->Append(strings);
+    //this->ListBox->Append(strings);
 }
 
 void Web_ScannerFrame::OnLoad_Url_ButtonClick(wxCommandEvent& event)

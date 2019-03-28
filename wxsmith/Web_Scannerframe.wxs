@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxFrame" name="Web_ScannerFrame">
-		<size>515,295</size>
+		<size>511,287</size>
+		<id_arg>0</id_arg>
 		<object class="wxBoxSizer" variable="BoxSizer1" member="no">
 			<object class="sizeritem">
 				<object class="wxPanel" name="ID_MAIN_PANEL" variable="Main_Panel" member="yes">
-					<size>505,285</size>
+					<size>529,349</size>
 					<handler function="OnMain_PanelPaint" entry="EVT_PAINT" />
 					<object class="wxButton" name="ID_GO_BUTTON" variable="Go_Button" member="yes">
 						<label>GO</label>
-						<pos>96,256</pos>
+						<pos>152,256</pos>
 						<handler function="OnGo_ButtonClick" entry="EVT_BUTTON" />
 					</object>
 					<object class="wxButton" name="ID_BUTTON1" variable="Load_Url_Button" member="yes">
@@ -26,7 +27,7 @@
 					</object>
 					<object class="wxButton" name="ID_QUIT_BUTTON" variable="Quit_Button" member="yes">
 						<label>Quit</label>
-						<pos>328,256</pos>
+						<pos>320,256</pos>
 						<handler function="OnQuit" entry="EVT_BUTTON" />
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="URL_TextCtrl" member="yes">
@@ -40,7 +41,7 @@
 					<object class="wxListBox" name="ID_LISTBOX" variable="ListBox" member="yes">
 						<default>-1</default>
 						<pos>8,128</pos>
-						<size>336,104</size>
+						<size>344,120</size>
 					</object>
 					<object class="wxGauge" name="ID_PROGRESSBAR" variable="ProgressBar" member="yes">
 						<pos>16,96</pos>
