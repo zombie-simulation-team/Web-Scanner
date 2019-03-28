@@ -54,6 +54,7 @@ const long Web_ScannerFrame::ID_QUIT_BUTTON = wxNewId();
 const long Web_ScannerFrame::ID_TEXTCTRL1 = wxNewId();
 const long Web_ScannerFrame::ID_WORD_TEXTCTRL = wxNewId();
 const long Web_ScannerFrame::ID_LISTBOX = wxNewId();
+const long Web_ScannerFrame::ID_PROGRESSBAR = wxNewId();
 const long Web_ScannerFrame::ID_MAIN_PANEL = wxNewId();
 const long Web_ScannerFrame::idMenuQuit = wxNewId();
 const long Web_ScannerFrame::idMenuAbout = wxNewId();
@@ -76,17 +77,19 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
     wxMenu* Menu2;
 
     Create(parent, id, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
+    SetClientSize(wxSize(515,295));
     BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    Main_Panel = new wxPanel(this, ID_MAIN_PANEL, wxDefaultPosition, wxSize(500,300), wxTAB_TRAVERSAL, _T("ID_MAIN_PANEL"));
+    Main_Panel = new wxPanel(this, ID_MAIN_PANEL, wxDefaultPosition, wxSize(505,285), wxTAB_TRAVERSAL, _T("ID_MAIN_PANEL"));
     Go_Button = new wxButton(Main_Panel, ID_GO_BUTTON, _("GO"), wxPoint(96,256), wxDefaultSize, 0, wxDefaultValidator, _T("ID_GO_BUTTON"));
-    Load_Url_Button = new wxButton(Main_Panel, ID_BUTTON1, _("URL"), wxPoint(360,39), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
+    Load_Url_Button = new wxButton(Main_Panel, ID_BUTTON1, _("URL"), wxPoint(360,16), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
     Load_Url_Button->SetToolTip(_("Load URL List"));
-    Load_Word_Button = new wxButton(Main_Panel, ID_BUTTON2, _("Word"), wxPoint(360,87), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
+    Load_Word_Button = new wxButton(Main_Panel, ID_BUTTON2, _("Word"), wxPoint(360,56), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     Load_Word_Button->SetToolTip(_("Load Word List"));
     Quit_Button = new wxButton(Main_Panel, ID_QUIT_BUTTON, _("Quit"), wxPoint(328,256), wxDefaultSize, 0, wxDefaultValidator, _T("ID_QUIT_BUTTON"));
-    URL_TextCtrl = new wxTextCtrl(Main_Panel, ID_TEXTCTRL1, wxEmptyString, wxPoint(24,40), wxSize(304,27), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    Word_TextCtrl = new wxTextCtrl(Main_Panel, ID_WORD_TEXTCTRL, wxEmptyString, wxPoint(24,88), wxSize(304,27), 0, wxDefaultValidator, _T("ID_WORD_TEXTCTRL"));
-    ListBox = new wxListBox(Main_Panel, ID_LISTBOX, wxPoint(24,128), wxSize(336,104), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX"));
+    URL_TextCtrl = new wxTextCtrl(Main_Panel, ID_TEXTCTRL1, wxEmptyString, wxPoint(16,16), wxSize(328,27), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+    Word_TextCtrl = new wxTextCtrl(Main_Panel, ID_WORD_TEXTCTRL, wxEmptyString, wxPoint(16,56), wxSize(328,27), 0, wxDefaultValidator, _T("ID_WORD_TEXTCTRL"));
+    ListBox = new wxListBox(Main_Panel, ID_LISTBOX, wxPoint(8,128), wxSize(336,104), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX"));
+    ProgressBar = new wxGauge(Main_Panel, ID_PROGRESSBAR, 100, wxPoint(16,96), wxSize(320,28), 0, wxDefaultValidator, _T("ID_PROGRESSBAR"));
     BoxSizer1->Add(Main_Panel, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     SetSizer(BoxSizer1);
     MenuBar1 = new wxMenuBar();
@@ -105,13 +108,14 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
     StatusBar1->SetFieldsCount(1,__wxStatusBarWidths_1);
     StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
-    BoxSizer1->Fit(this);
-    BoxSizer1->SetSizeHints(this);
+    SetSizer(BoxSizer1);
+    Layout();
 
     Connect(ID_GO_BUTTON,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&Web_ScannerFrame::OnGo_ButtonClick);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&Web_ScannerFrame::OnLoad_Url_ButtonClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&Web_ScannerFrame::OnLoad_Word_ButtonClick);
     Connect(ID_QUIT_BUTTON,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&Web_ScannerFrame::OnQuit);
+    Main_Panel->Connect(wxEVT_PAINT,(wxObjectEventFunction)&Web_ScannerFrame::OnMain_PanelPaint,0,this);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&Web_ScannerFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&Web_ScannerFrame::OnAbout);
     //*)
@@ -134,6 +138,7 @@ void Web_ScannerFrame::OnAbout(wxCommandEvent& event)
     wxMessageBox(msg, _("Welcome to..."));
 }
 
+
 void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
 {
     wxTextFile urlFile;
@@ -142,10 +147,12 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
     urlFile.Open(urlFileName);
     wordFile.Open(wordFileName);
 
+    int lineCountPercent = ProgressBar->GetRange() / urlFile.GetLineCount();
+
     wxString line = urlFile.GetFirstLine();
 
     wxArrayString strings;
-
+    ProgressBar->SetValue(0); // clear the gauge
     do
     {
         wxURL url(line);
@@ -179,18 +186,20 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
                             wordCount++;
                         }
                     }
-
+                    strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
                     word = wordFile.GetNextLine();
                 } while(!wordFile.Eof());
 
-                strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
+                //strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
             }
             delete in_stream;
         }
-
+        ProgressBar->SetValue((ProgressBar->GetValue()+lineCountPercent)); // update progress bar
         line = urlFile.GetNextLine();
+
     } while(!urlFile.Eof());
 
+    ProgressBar->SetValue(ProgressBar->GetRange());         // done. Fill the progress bar entirely
     urlFile.Close();
     wordFile.Close();
 
@@ -237,4 +246,8 @@ void Web_ScannerFrame::OnLoad_Word_ButtonClick(wxCommandEvent& event)
         this->Word_TextCtrl->AppendText(wordFileName);
     }
     dialog.Close();
+}
+
+void Web_ScannerFrame::OnMain_PanelPaint(wxPaintEvent& event)
+{
 }

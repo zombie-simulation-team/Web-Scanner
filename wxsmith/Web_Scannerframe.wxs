@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxFrame" name="Web_ScannerFrame">
+		<size>515,295</size>
 		<object class="wxBoxSizer" variable="BoxSizer1" member="no">
 			<object class="sizeritem">
 				<object class="wxPanel" name="ID_MAIN_PANEL" variable="Main_Panel" member="yes">
-					<size>500,300</size>
+					<size>505,285</size>
+					<handler function="OnMain_PanelPaint" entry="EVT_PAINT" />
 					<object class="wxButton" name="ID_GO_BUTTON" variable="Go_Button" member="yes">
 						<label>GO</label>
 						<pos>96,256</pos>
@@ -12,13 +14,13 @@
 					</object>
 					<object class="wxButton" name="ID_BUTTON1" variable="Load_Url_Button" member="yes">
 						<label>URL</label>
-						<pos>360,39</pos>
+						<pos>360,16</pos>
 						<tooltip>Load URL List</tooltip>
 						<handler function="OnLoad_Url_ButtonClick" entry="EVT_BUTTON" />
 					</object>
 					<object class="wxButton" name="ID_BUTTON2" variable="Load_Word_Button" member="yes">
 						<label>Word</label>
-						<pos>360,87</pos>
+						<pos>360,56</pos>
 						<tooltip>Load Word List</tooltip>
 						<handler function="OnLoad_Word_ButtonClick" entry="EVT_BUTTON" />
 					</object>
@@ -28,17 +30,21 @@
 						<handler function="OnQuit" entry="EVT_BUTTON" />
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="URL_TextCtrl" member="yes">
-						<pos>24,40</pos>
-						<size>304,27</size>
+						<pos>16,16</pos>
+						<size>328,27</size>
 					</object>
 					<object class="wxTextCtrl" name="ID_WORD_TEXTCTRL" variable="Word_TextCtrl" member="yes">
-						<pos>24,88</pos>
-						<size>304,27</size>
+						<pos>16,56</pos>
+						<size>328,27</size>
 					</object>
 					<object class="wxListBox" name="ID_LISTBOX" variable="ListBox" member="yes">
 						<default>-1</default>
-						<pos>24,128</pos>
+						<pos>8,128</pos>
 						<size>336,104</size>
+					</object>
+					<object class="wxGauge" name="ID_PROGRESSBAR" variable="ProgressBar" member="yes">
+						<pos>16,96</pos>
+						<size>320,28</size>
 					</object>
 				</object>
 				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
