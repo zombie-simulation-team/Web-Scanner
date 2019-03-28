@@ -1777,3 +1777,14 @@
 	<wx/textctrl.h>
 	<wx/listbox.h>
 
+1553780415 source:/home/elnano/git/Web-Scanner/Web_ScannerMain.cpp
+	"wx_pch.h"
+	"Web_ScannerMain.h"
+	<wx/msgdlg.h>
+	<wx/url.h>
+	<wx/stream.h>
+	<wx/sstream.h>
+	<wx/textfile.h>
+	<wx/string.h>
+	<wx/intl.h>
+

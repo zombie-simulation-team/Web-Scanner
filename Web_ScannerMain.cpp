@@ -12,6 +12,7 @@
 #include <wx/msgdlg.h>
 #include <wx/url.h>
 #include <wx/stream.h>
+#include <wx/sstream.h>
 #include <wx/textfile.h>
 
 //(*InternalHeaders(Web_ScannerFrame)
@@ -138,11 +139,6 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
     wxTextFile urlFile;
     wxTextFile wordFile;
 
-    urlFile.Open(urlFileName);
-    wordFile.Open(wordFileName);
-    urlFile.GoToLine(0);
-    wordFile.GoToLine(0);
-
     wxString line = urlFile.GetFirstLine();
     wxString word = wordFile.GetFirstLine();
 
@@ -155,28 +151,27 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
         //checks if there is no error in the URL.
         if (url.GetError() == wxURL_NOERR)
         {
-            wxString data;
+            wxString html_data;
             int wordCount = 0;
 
             wxInputStream *in_stream = url.GetInputStream();
 
             if(in_stream->IsOk()){
-                size_t bufSize = in_stream->GetSize();
-                char *buffer = new char[bufSize];
+                wxStringOutputStream html_stream(&html_data);
 
-                in_stream->Read(buffer, bufSize);
-                data.Append(buffer);
+                in_stream->Read(html_stream);
 
                 size_t pos = 0;
-                while(pos < data.Length())
+                while(pos < html_data.Length())
                 {
-                    pos = data.find(word, pos + word.Length());
-                    //if(pos != wxNOT_FOUND)
+                    pos = html_data.find(word, pos);
+
+                    if(pos != wxNOT_FOUND){
                         wordCount++;
+                        pos += word.Length();
+                    }
                 }
                 strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
-
-                delete buffer;
             }
             delete in_stream;
         }
