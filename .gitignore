@@ -1,5 +1,5 @@
 bin/
 obj/
 wx_pch.h.gch/
-*.depend
+Web Scanner.depend
 *.layout
