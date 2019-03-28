@@ -4,41 +4,50 @@
 		<object class="wxBoxSizer" variable="BoxSizer1" member="no">
 			<object class="sizeritem">
 				<object class="wxPanel" name="ID_MAIN_PANEL" variable="Main_Panel" member="yes">
-					<size>500,300</size>
+					<size>550,380</size>
 					<object class="wxButton" name="ID_GO_BUTTON" variable="Go_Button" member="yes">
 						<label>GO</label>
-						<pos>96,256</pos>
+						<pos>24,340</pos>
 						<handler function="OnGo_ButtonClick" entry="EVT_BUTTON" />
 					</object>
 					<object class="wxButton" name="ID_BUTTON1" variable="Load_Url_Button" member="yes">
 						<label>URL</label>
-						<pos>360,39</pos>
+						<pos>432,48</pos>
 						<tooltip>Load URL List</tooltip>
 						<handler function="OnLoad_Url_ButtonClick" entry="EVT_BUTTON" />
 					</object>
 					<object class="wxButton" name="ID_BUTTON2" variable="Load_Word_Button" member="yes">
 						<label>Word</label>
-						<pos>360,87</pos>
+						<pos>432,104</pos>
 						<tooltip>Load Word List</tooltip>
 						<handler function="OnLoad_Word_ButtonClick" entry="EVT_BUTTON" />
 					</object>
 					<object class="wxButton" name="ID_QUIT_BUTTON" variable="Quit_Button" member="yes">
 						<label>Quit</label>
-						<pos>328,256</pos>
+						<pos>152,340</pos>
 						<handler function="OnQuit" entry="EVT_BUTTON" />
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="URL_TextCtrl" member="yes">
-						<pos>24,40</pos>
-						<size>304,27</size>
+						<pos>24,50</pos>
+						<size>344,27</size>
 					</object>
 					<object class="wxTextCtrl" name="ID_WORD_TEXTCTRL" variable="Word_TextCtrl" member="yes">
-						<pos>24,88</pos>
-						<size>304,27</size>
+						<pos>24,100</pos>
+						<size>345,27</size>
 					</object>
 					<object class="wxListBox" name="ID_LISTBOX" variable="ListBox" member="yes">
 						<default>-1</default>
-						<pos>24,128</pos>
-						<size>336,104</size>
+						<pos>24,150</pos>
+						<size>344,170</size>
+					</object>
+					<object class="wxGauge" name="ID_PROGRESS" variable="Progress" member="yes">
+						<pos>320,340</pos>
+						<size>200,28</size>
+					</object>
+					<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
+						<label>Web Scanner</label>
+						<pos>248,16</pos>
+						<size>96,16</size>
 					</object>
 				</object>
 				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>

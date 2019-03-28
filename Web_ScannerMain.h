@@ -11,12 +11,14 @@
 #define WEB_SCANNERMAIN_H
 
 //(*Headers(Web_ScannerFrame)
+#include <wx/gauge.h>
 #include <wx/sizer.h>
 #include <wx/button.h>
 #include <wx/menu.h>
 #include <wx/panel.h>
 #include <wx/statusbr.h>
 #include <wx/frame.h>
+#include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/listbox.h>
 //*)
@@ -52,6 +54,8 @@ class Web_ScannerFrame: public wxFrame
         static const long ID_TEXTCTRL1;
         static const long ID_WORD_TEXTCTRL;
         static const long ID_LISTBOX;
+        static const long ID_PROGRESS;
+        static const long ID_STATICTEXT1;
         static const long ID_MAIN_PANEL;
         static const long idMenuQuit;
         static const long idMenuAbout;
@@ -63,10 +67,12 @@ class Web_ScannerFrame: public wxFrame
         wxStatusBar* StatusBar1;
         wxPanel* Main_Panel;
         wxTextCtrl* Word_TextCtrl;
+        wxStaticText* StaticText1;
         wxButton* Quit_Button;
         wxButton* Load_Url_Button;
         wxButton* Go_Button;
         wxTextCtrl* URL_TextCtrl;
+        wxGauge* Progress;
         wxButton* Load_Word_Button;
         //*)
 

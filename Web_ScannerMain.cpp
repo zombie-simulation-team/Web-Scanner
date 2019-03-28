@@ -54,6 +54,8 @@ const long Web_ScannerFrame::ID_QUIT_BUTTON = wxNewId();
 const long Web_ScannerFrame::ID_TEXTCTRL1 = wxNewId();
 const long Web_ScannerFrame::ID_WORD_TEXTCTRL = wxNewId();
 const long Web_ScannerFrame::ID_LISTBOX = wxNewId();
+const long Web_ScannerFrame::ID_PROGRESS = wxNewId();
+const long Web_ScannerFrame::ID_STATICTEXT1 = wxNewId();
 const long Web_ScannerFrame::ID_MAIN_PANEL = wxNewId();
 const long Web_ScannerFrame::idMenuQuit = wxNewId();
 const long Web_ScannerFrame::idMenuAbout = wxNewId();
@@ -67,6 +69,9 @@ END_EVENT_TABLE()
 
 Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
 {
+    urlFileName = "";
+    wordFileName = "";
+
     //(*Initialize(Web_ScannerFrame)
     wxMenuItem* MenuItem2;
     wxMenuItem* MenuItem1;
@@ -77,16 +82,18 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
 
     Create(parent, id, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    Main_Panel = new wxPanel(this, ID_MAIN_PANEL, wxDefaultPosition, wxSize(500,300), wxTAB_TRAVERSAL, _T("ID_MAIN_PANEL"));
-    Go_Button = new wxButton(Main_Panel, ID_GO_BUTTON, _("GO"), wxPoint(96,256), wxDefaultSize, 0, wxDefaultValidator, _T("ID_GO_BUTTON"));
-    Load_Url_Button = new wxButton(Main_Panel, ID_BUTTON1, _("URL"), wxPoint(360,39), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
+    Main_Panel = new wxPanel(this, ID_MAIN_PANEL, wxDefaultPosition, wxSize(550,380), wxTAB_TRAVERSAL, _T("ID_MAIN_PANEL"));
+    Go_Button = new wxButton(Main_Panel, ID_GO_BUTTON, _("GO"), wxPoint(24,340), wxDefaultSize, 0, wxDefaultValidator, _T("ID_GO_BUTTON"));
+    Load_Url_Button = new wxButton(Main_Panel, ID_BUTTON1, _("URL"), wxPoint(432,48), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
     Load_Url_Button->SetToolTip(_("Load URL List"));
-    Load_Word_Button = new wxButton(Main_Panel, ID_BUTTON2, _("Word"), wxPoint(360,87), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
+    Load_Word_Button = new wxButton(Main_Panel, ID_BUTTON2, _("Word"), wxPoint(432,104), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     Load_Word_Button->SetToolTip(_("Load Word List"));
-    Quit_Button = new wxButton(Main_Panel, ID_QUIT_BUTTON, _("Quit"), wxPoint(328,256), wxDefaultSize, 0, wxDefaultValidator, _T("ID_QUIT_BUTTON"));
-    URL_TextCtrl = new wxTextCtrl(Main_Panel, ID_TEXTCTRL1, wxEmptyString, wxPoint(24,40), wxSize(304,27), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    Word_TextCtrl = new wxTextCtrl(Main_Panel, ID_WORD_TEXTCTRL, wxEmptyString, wxPoint(24,88), wxSize(304,27), 0, wxDefaultValidator, _T("ID_WORD_TEXTCTRL"));
-    ListBox = new wxListBox(Main_Panel, ID_LISTBOX, wxPoint(24,128), wxSize(336,104), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX"));
+    Quit_Button = new wxButton(Main_Panel, ID_QUIT_BUTTON, _("Quit"), wxPoint(152,340), wxDefaultSize, 0, wxDefaultValidator, _T("ID_QUIT_BUTTON"));
+    URL_TextCtrl = new wxTextCtrl(Main_Panel, ID_TEXTCTRL1, wxEmptyString, wxPoint(24,50), wxSize(344,27), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+    Word_TextCtrl = new wxTextCtrl(Main_Panel, ID_WORD_TEXTCTRL, wxEmptyString, wxPoint(24,100), wxSize(345,27), 0, wxDefaultValidator, _T("ID_WORD_TEXTCTRL"));
+    ListBox = new wxListBox(Main_Panel, ID_LISTBOX, wxPoint(24,150), wxSize(344,170), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX"));
+    Progress = new wxGauge(Main_Panel, ID_PROGRESS, 100, wxPoint(320,340), wxSize(200,28), 0, wxDefaultValidator, _T("ID_PROGRESS"));
+    StaticText1 = new wxStaticText(Main_Panel, ID_STATICTEXT1, _("Web Scanner"), wxPoint(248,16), wxSize(96,16), 0, _T("ID_STATICTEXT1"));
     BoxSizer1->Add(Main_Panel, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     SetSizer(BoxSizer1);
     MenuBar1 = new wxMenuBar();
@@ -136,65 +143,94 @@ void Web_ScannerFrame::OnAbout(wxCommandEvent& event)
 
 void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
 {
-    wxTextFile urlFile;
-    wxTextFile wordFile;
-
-    urlFile.Open(urlFileName);
-    wordFile.Open(wordFileName);
-
-    wxString line = urlFile.GetFirstLine();
-
-    wxArrayString strings;
-
-    do
+    // checks if the files have been selected
+    if(urlFileName != "" && wordFileName != "")
     {
-        wxURL url(line);
+        wxTextFile urlFile;
+        wxTextFile wordFile;
 
-        //checks if there is no error in the URL.
-        if (url.GetError() == wxURL_NOERR)
+        urlFile.Open(urlFileName);
+        wordFile.Open(wordFileName);
+
+        wxString line = urlFile.GetFirstLine();
+        wxArrayString strings;
+
+        int urlCount = 1;
+        int linePercent = Progress->GetRange() / urlFile.GetLineCount();
+        Progress->SetValue(0);
+
+        do
         {
-            int wordCount = 0;
-            wxString data;
+            wxURL url(line);
 
-            wxInputStream *in_stream = url.GetInputStream();
-
-            if(in_stream && in_stream->IsOk())
+            // checks if there is any error with url
+            if (url.GetError() == wxURL_NOERR)
             {
-                wxStringOutputStream html_stream(&data);
+                int wordCount = 0;
+                wxString data;
+                urlCount++;
 
-                in_stream->Read(html_stream);
+                wxInputStream *in_stream = url.GetInputStream();
 
-                wordFile.GoToLine(0);
-                wxString word = wordFile.GetFirstLine();
-
-                do
+                if(in_stream && in_stream->IsOk())
                 {
-                    size_t pos = 0;
+                    wordFile.GoToLine(0);
+                    wxString word = wordFile.GetFirstLine();
 
-                    while(pos < data.Length())
+                    wxStringOutputStream html_stream(&data);
+                    in_stream->Read(html_stream);
+
+                    do
                     {
-                        pos = data.find(word, pos + word.Length());
+                        size_t pos = 0;
 
-                        if(pos != wxNOT_FOUND){
-                            wordCount++;
+                        while(pos < data.Length())
+                        {
+                            pos = data.find(word, pos + word.Length());
+
+                            if(pos != wxNOT_FOUND){
+                                wordCount++;
+                            }
                         }
-                    }
 
-                    word = wordFile.GetNextLine();
-                } while(!wordFile.Eof());
+                        word = wordFile.GetNextLine();
 
-                strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
+                    } while(!wordFile.Eof());
+
+                    strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
+                }
+                delete in_stream;
             }
-            delete in_stream;
-        }
 
-        line = urlFile.GetNextLine();
-    } while(!urlFile.Eof());
+            Progress->SetValue((Progress->GetValue() + linePercent));
 
-    urlFile.Close();
-    wordFile.Close();
+            line = urlFile.GetNextLine();
 
-    this->ListBox->Append(strings);
+        } while(!urlFile.Eof());
+
+        urlFile.Close();
+        wordFile.Close();
+
+        this->Progress->SetValue(Progress->GetRange());
+        this->ListBox->Append(strings);
+    }
+    else if(urlFileName == "" && wordFileName != "")
+    {
+         wxMessageDialog *dial = new wxMessageDialog(NULL, wxT("No URL File Selected."),
+                                                     wxT("Error"), wxOK | wxICON_ERROR);
+        dial->ShowModal();
+    }
+    else if(urlFileName != "" && wordFileName == "")
+    {
+         wxMessageDialog *dial = new wxMessageDialog(NULL, wxT("No Word File Selected."),
+                                                     wxT("Error"), wxOK | wxICON_ERROR);
+        dial->ShowModal();
+    }
+    else {
+         wxMessageDialog *dial = new wxMessageDialog(NULL, wxT("No File Selected."),
+                                                     wxT("Error"), wxOK | wxICON_ERROR);
+        dial->ShowModal();
+    }
 }
 
 void Web_ScannerFrame::OnLoad_Url_ButtonClick(wxCommandEvent& event)
