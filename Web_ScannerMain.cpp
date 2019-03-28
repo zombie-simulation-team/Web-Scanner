@@ -141,8 +141,6 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
 
     urlFile.Open(urlFileName);
     wordFile.Open(wordFileName);
-    urlFile.GoToLine(0);
-    wordFile.GoToLine(0);
 
     wxString line = urlFile.GetFirstLine();
     wxString word = wordFile.GetFirstLine();
@@ -156,9 +154,8 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
         //checks if there is no error in the URL.
         if (url.GetError() == wxURL_NOERR)
         {
-            wxString data;                                           // to save webdata
-
-            int wordCount = 0;                                       // to keep track of word match
+            int wordCount = 0;
+            wxString data;                                           // to save webdata                                      // to keep track of word match
 
             wxInputStream *in_stream = url.GetInputStream();         // reading url
 
@@ -172,8 +169,10 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
                 while(pos < data.Length())
                 {
                     pos = data.find(word, pos + word.Length());
-                    //if(pos != wxNOT_FOUND)
+
+                    if(pos != wxNOT_FOUND){
                         wordCount++;
+                    }
                 }
                 strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
             }
