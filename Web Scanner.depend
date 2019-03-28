@@ -1777,7 +1777,49 @@
 	<wx/textctrl.h>
 	<wx/listbox.h>
 
-1553780415 source:/home/elnano/git/Web-Scanner/Web_ScannerMain.cpp
+1553715351 D
+
+1553780827 source:/home/elnano/git/Web-Scanner/Web_ScannerMain.cpp
+	"wx_pch.h"
+	"Web_ScannerMain.h"
+	<wx/msgdlg.h>
+	<wx/url.h>
+	<wx/stream.h>
+	<wx/sstream.h>
+	<wx/textfile.h>
+	<wx/string.h>
+	<wx/intl.h>
+
+1553739975 source:/home/alex/Documents/Embedded_GUI/Assignment_7/Web-Scanner/wx_pch.h
+	<wx/wxprec.h>
+	<wx/wx.h>
+
+1553739975 source:/home/alex/Documents/Embedded_GUI/Assignment_7/Web-Scanner/Web_ScannerApp.cpp
+	"wx_pch.h"
+	"Web_ScannerApp.h"
+	"Web_ScannerMain.h"
+	<wx/image.h>
+
+1553739975 /home/alex/Documents/Embedded_GUI/Assignment_7/Web-Scanner/wx_pch.h
+	<wx/wxprec.h>
+	<wx/wx.h>
+
+1553739975 /home/alex/Documents/Embedded_GUI/Assignment_7/Web-Scanner/Web_ScannerApp.h
+	<wx/app.h>
+
+1553739975 /home/alex/Documents/Embedded_GUI/Assignment_7/Web-Scanner/Web_ScannerMain.h
+	<wx/sizer.h>
+	<wx/button.h>
+	<wx/menu.h>
+	<wx/panel.h>
+	<wx/statusbr.h>
+	<wx/frame.h>
+	<wx/textctrl.h>
+	<wx/listbox.h>
+
+1553775174 source:/home/alex/Documents/Embedded_GUI/Assignment_7/Web-Scanner/Web_ScannerMain.cpp
+
+1553775174 336e4779de86867548045059cba444afba4fb
 	"wx_pch.h"
 	"Web_ScannerMain.h"
 	<wx/msgdlg.h>

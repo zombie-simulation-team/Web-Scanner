@@ -151,24 +151,24 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
         //checks if there is no error in the URL.
         if (url.GetError() == wxURL_NOERR)
         {
-            wxString html_data;
             int wordCount = 0;
+            wxString data;                                           // to save webdata                                      // to keep track of word match
 
-            wxInputStream *in_stream = url.GetInputStream();
+            wxInputStream *in_stream = url.GetInputStream();         // reading url
 
-            if(in_stream->IsOk()){
-                wxStringOutputStream html_stream(&html_data);
+            if(in_stream && in_stream->IsOk())                       // reading was ok
+            {
+                wxStringOutputStream html_stream(&data);             // output stream used to save data to the data string
 
                 in_stream->Read(html_stream);
-
                 size_t pos = 0;
-                while(pos < html_data.Length())
+
+                while(pos < data.Length())
                 {
-                    pos = html_data.find(word, pos);
+                    pos = data.find(word, pos + word.Length());
 
                     if(pos != wxNOT_FOUND){
                         wordCount++;
-                        pos += word.Length();
                     }
                 }
                 strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
@@ -204,6 +204,7 @@ void Web_ScannerFrame::OnLoad_Url_ButtonClick(wxCommandEvent& event)
         urlFileName = path;
         this->URL_TextCtrl->AppendText(urlFileName);
     }
+    dialog.Close();
 }
 
 void Web_ScannerFrame::OnLoad_Word_ButtonClick(wxCommandEvent& event)
@@ -224,4 +225,5 @@ void Web_ScannerFrame::OnLoad_Word_ButtonClick(wxCommandEvent& event)
         wordFileName = path;
         this->Word_TextCtrl->AppendText(wordFileName);
     }
+    dialog.Close();
 }
