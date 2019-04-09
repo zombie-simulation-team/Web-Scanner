@@ -12,6 +12,7 @@
 
 //(*Headers(Web_ScannerFrame)
 #include <wx/gauge.h>
+#include <wx/spinctrl.h>
 #include <wx/sizer.h>
 #include <wx/button.h>
 #include <wx/menu.h>
@@ -34,6 +35,7 @@ class Web_ScannerFrame: public wxFrame
     private:
         wxString urlFileName;
         wxString wordFileName;
+        int threadCount;
 
         //(*Handlers(Web_ScannerFrame)
         void OnQuit(wxCommandEvent& event);
@@ -44,6 +46,7 @@ class Web_ScannerFrame: public wxFrame
         void OnLoad_Url_ButtonClick(wxCommandEvent& event);
         void OnLoad_Word_ButtonClick(wxCommandEvent& event);
         void OnListBoxSelect(wxCommandEvent& event);
+        void OnSpinCtrl1Change(wxSpinEvent& event);
         //*)
 
         //(*Identifiers(Web_ScannerFrame)
@@ -56,6 +59,7 @@ class Web_ScannerFrame: public wxFrame
         static const long ID_LISTBOX;
         static const long ID_PROGRESS;
         static const long ID_STATICTEXT1;
+        static const long ID_SPINCTRL1;
         static const long ID_MAIN_PANEL;
         static const long idMenuQuit;
         static const long idMenuAbout;
@@ -70,6 +74,7 @@ class Web_ScannerFrame: public wxFrame
         wxStaticText* StaticText1;
         wxButton* Quit_Button;
         wxButton* Load_Url_Button;
+        wxSpinCtrl* SpinCtrl1;
         wxButton* Go_Button;
         wxTextCtrl* URL_TextCtrl;
         wxGauge* Progress;

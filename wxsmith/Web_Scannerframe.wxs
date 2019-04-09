@@ -49,6 +49,14 @@
 						<pos>248,16</pos>
 						<size>96,16</size>
 					</object>
+					<object class="wxSpinCtrl" name="ID_SPINCTRL1" variable="SpinCtrl1" member="yes">
+						<value>0</value>
+						<min>1</min>
+						<max>50</max>
+						<pos>488,160</pos>
+						<size>45,27</size>
+						<handler function="OnSpinCtrl1Change" entry="EVT_SPINCTRL" />
+					</object>
 				</object>
 				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 				<border>5</border>

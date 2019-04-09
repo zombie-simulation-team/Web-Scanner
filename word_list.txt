@@ -4,3 +4,13 @@ aperezpo
 school
 email
 arellano
+html
+http
+record
+url
+school
+image
+document
+day
+year
+month

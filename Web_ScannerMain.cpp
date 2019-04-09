@@ -56,6 +56,7 @@ const long Web_ScannerFrame::ID_WORD_TEXTCTRL = wxNewId();
 const long Web_ScannerFrame::ID_LISTBOX = wxNewId();
 const long Web_ScannerFrame::ID_PROGRESS = wxNewId();
 const long Web_ScannerFrame::ID_STATICTEXT1 = wxNewId();
+const long Web_ScannerFrame::ID_SPINCTRL1 = wxNewId();
 const long Web_ScannerFrame::ID_MAIN_PANEL = wxNewId();
 const long Web_ScannerFrame::idMenuQuit = wxNewId();
 const long Web_ScannerFrame::idMenuAbout = wxNewId();
@@ -71,6 +72,7 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
 {
     urlFileName = "";
     wordFileName = "";
+    threadCount = 1;
 
     //(*Initialize(Web_ScannerFrame)
     wxMenuItem* MenuItem2;
@@ -94,6 +96,8 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
     ListBox = new wxListBox(Main_Panel, ID_LISTBOX, wxPoint(24,150), wxSize(344,170), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX"));
     Progress = new wxGauge(Main_Panel, ID_PROGRESS, 100, wxPoint(320,340), wxSize(200,28), 0, wxDefaultValidator, _T("ID_PROGRESS"));
     StaticText1 = new wxStaticText(Main_Panel, ID_STATICTEXT1, _("Web Scanner"), wxPoint(248,16), wxSize(96,16), 0, _T("ID_STATICTEXT1"));
+    SpinCtrl1 = new wxSpinCtrl(Main_Panel, ID_SPINCTRL1, _T("0"), wxPoint(488,160), wxSize(45,27), 0, 1, 50, 0, _T("ID_SPINCTRL1"));
+    SpinCtrl1->SetValue(_T("0"));
     BoxSizer1->Add(Main_Panel, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     SetSizer(BoxSizer1);
     MenuBar1 = new wxMenuBar();
@@ -119,6 +123,7 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&Web_ScannerFrame::OnLoad_Url_ButtonClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&Web_ScannerFrame::OnLoad_Word_ButtonClick);
     Connect(ID_QUIT_BUTTON,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&Web_ScannerFrame::OnQuit);
+    Connect(ID_SPINCTRL1,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&Web_ScannerFrame::OnSpinCtrl1Change);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&Web_ScannerFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&Web_ScannerFrame::OnAbout);
     //*)
@@ -273,4 +278,9 @@ void Web_ScannerFrame::OnLoad_Word_ButtonClick(wxCommandEvent& event)
         this->Word_TextCtrl->AppendText(wordFileName);
     }
     dialog.Close();
+}
+
+void Web_ScannerFrame::OnSpinCtrl1Change(wxSpinEvent& event)
+{
+    threadCount = event.GetValue();
 }
