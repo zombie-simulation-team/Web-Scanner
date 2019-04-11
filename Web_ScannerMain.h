@@ -40,7 +40,7 @@ class Web_ScannerFrame: public wxFrame
         int threadCount;
         wxString *urlList;
         wxString *wordList;
-        wxArrayString *urlData;
+        wxString *urlData;
         MyThread **threadList;
         int *threadStatus;
         int urlCount;

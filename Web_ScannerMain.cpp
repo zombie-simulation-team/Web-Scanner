@@ -291,7 +291,7 @@ void Web_ScannerFrame::ThreadIdle(wxIdleEvent& event)
 void Web_ScannerFrame::DownloadUrlData()
 {
 
-    urlData = new wxArrayString [urlCount];
+    urlData = new wxString [urlCount];
 
     for(int i = 0; i < urlCount ; i++ )
     {
@@ -307,7 +307,7 @@ void Web_ScannerFrame::DownloadUrlData()
                  wxStringOutputStream html_stream(&data);
                  in_stream->Read(html_stream);
 
-                 urlData->Append(data);
+                 urlData[i] = data;
              }
         }
     }
@@ -323,10 +323,12 @@ void Web_ScannerFrame::InitializeThreads()
 
         int amountPerThread = urlCount / threadCount;
 
-        for(int i = 0; i < threadCount; i+=amountPerThread - 1)
+        int index = 0;
+        for(int i = 0; i < threadCount; i++)
         {
-            threadList[i] = new MyThread(i, i + amountPerThread, urlData, wordList, threadStatus);
+            threadList[i] = new MyThread(index, index + amountPerThread - 1, urlData, wordList, threadStatus);
             threadStatus[i] = 0;
+            index = index + amountPerThread;
         }
     }
 }
