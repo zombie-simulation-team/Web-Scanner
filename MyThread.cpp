@@ -1,6 +1,6 @@
 #include "MyThread.h"
 
-MyThread::MyThread(int start, int ending, wxString *dataList, wxString *wordList, int *statusList)
+MyThread::MyThread(int start, int ending, wxString *dataList, wxString *wordList, int *wordCount, int *statusList, int threadNumber)
     : wxThread(wxTHREAD_JOINABLE)
 {
     this->start = start;
@@ -8,6 +8,8 @@ MyThread::MyThread(int start, int ending, wxString *dataList, wxString *wordList
     this->dataList = dataList;
     this->wordList = wordList;
     this->statusList = statusList;
+    this->wordCount = wordCount;
+    this->threadNumber = threadNumber;
 }
 
 MyThread::~MyThread()
@@ -35,9 +37,9 @@ void *MyThread::Entry()
                 }
             }
         }
-
-        statusList[i] = 1;
+        this->wordCount[i] = wordCount;
     }
+    statusList[threadNumber] = 1;
 
     return 0;
 }

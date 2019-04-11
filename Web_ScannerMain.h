@@ -43,6 +43,7 @@ class Web_ScannerFrame: public wxFrame
         wxString *urlData;
         MyThread **threadList;
         int *threadStatus;
+        int *wordCounter;
         int urlCount;
 
         void ThreadIdle(wxIdleEvent& event);

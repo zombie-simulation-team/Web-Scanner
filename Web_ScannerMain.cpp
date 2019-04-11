@@ -168,7 +168,14 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
         //Progress->SetValue((Progress->GetValue() + linePercent));
 
         this->Progress->SetValue(Progress->GetRange());
-        //this->ListBox->Append(strings);
+
+        int index = 0;
+        for(int i = 0; i < urlCount; i++)
+        {
+            strings.Add(wxString::Format(wxT("%i"), i) + "\t" + urlList[i]  + "\t" +
+                        "\t" + wxString::Format(wxT("%i"), threadStatus[i]));
+            this->ListBox->Append(strings);
+        }
     }
     else if(urlFileName == "" && wordFileName != "")
     {
@@ -211,12 +218,15 @@ void Web_ScannerFrame::OnLoad_Url_ButtonClick(wxCommandEvent& event)
         urlFile.Open(urlFileName);
 
         urlList = new wxString[urlFile.GetLineCount()];
+        wordCounter = new int[urlFile.GetLineCount()];
+
         urlCount = urlFile.GetLineCount();
         urlList[0] = urlFile.GetFirstLine();
 
         for(size_t i = 1; i < urlFile.GetLineCount(); i++)
         {
            urlList[i] = urlFile.GetNextLine();
+           wordCounter[i] = 0;
         }
     }
     dialog.Close();
@@ -276,16 +286,20 @@ void Web_ScannerFrame::OnSpinCtrl1Change(wxSpinEvent& event)
 
 void Web_ScannerFrame::ThreadIdle(wxIdleEvent& event)
 {
-    int count = 0;
-    for(int i = 0; i < threadCount; i++)
+    int temp = 0;
+    wxArrayString strings;
+
+    for(int i = 0; i < urlCount; i++)
     {
-        if(threadStatus[i] == 1)
+        if(threadStatus[i] >= 1)
         {
-            count++;
+            temp++;
+            strings.Add(urlList[i]  + "\t" + "\t" + wxString::Format(wxT("%i"), threadStatus[i]));
+            this->ListBox->Append(strings);
         }
     }
 
-     Progress->SetValue((count * 100) / threadCount);
+     Progress->SetValue((temp * 100) / threadCount);
 }
 
 void Web_ScannerFrame::DownloadUrlData()
@@ -326,7 +340,8 @@ void Web_ScannerFrame::InitializeThreads()
         int index = 0;
         for(int i = 0; i < threadCount; i++)
         {
-            threadList[i] = new MyThread(index, index + amountPerThread - 1, urlData, wordList, threadStatus);
+            threadList[i] = new MyThread(index, index + amountPerThread - 1, urlData,
+                                         wordList, wordCounter, threadStatus, i);
             threadStatus[i] = 0;
             index = index + amountPerThread;
         }
