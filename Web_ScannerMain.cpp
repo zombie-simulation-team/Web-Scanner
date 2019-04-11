@@ -65,6 +65,7 @@ const long Web_ScannerFrame::ID_STATUSBAR1 = wxNewId();
 
 BEGIN_EVENT_TABLE(Web_ScannerFrame,wxFrame)
     //(*EventTable(Web_ScannerFrame)
+        //EVT_IDLE(Web_ScannerFrame::ThreadIdle)
     //*)
 END_EVENT_TABLE()
 
@@ -73,7 +74,7 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
     urlFileName = "";
     wordFileName = "";
     threadCount = 1;
-
+    urlCount = 0;
     //(*Initialize(Web_ScannerFrame)
     wxMenuItem* MenuItem2;
     wxMenuItem* MenuItem1;
@@ -151,73 +152,23 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
     // checks if the files have been selected
     if(urlFileName != "" && wordFileName != "")
     {
-        wxTextFile urlFile;
-        wxTextFile wordFile;
-
-        urlFile.Open(urlFileName);
-        wordFile.Open(wordFileName);
-
-        wxString line = urlFile.GetFirstLine();
         wxArrayString strings;
+        DownloadUrlData();
+        InitializeThreads();
 
-        int urlCount = 1;
-        int linePercent = Progress->GetRange() / urlFile.GetLineCount();
+        //int urlCount = 1;
+        int linePercent = Progress->GetRange() / threadCount;
         Progress->SetValue(0);
 
-        do
-        {
-            wxURL url(line);
+        for(int i = 0; i < threadCount; i++){
+            threadList[i]->Create();
+            threadList[i]->Run();
+        }
 
-            // checks if there is any error with url
-            if (url.GetError() == wxURL_NOERR)
-            {
-                int wordCount = 0;
-                wxString data;
-                urlCount++;
-
-                wxInputStream *in_stream = url.GetInputStream();
-
-                if(in_stream && in_stream->IsOk())
-                {
-                    wordFile.GoToLine(0);
-                    wxString word = wordFile.GetFirstLine();
-
-                    wxStringOutputStream html_stream(&data);
-                    in_stream->Read(html_stream);
-
-                    do
-                    {
-                        size_t pos = 0;
-
-                        while(pos < data.Length())
-                        {
-                            pos = data.find(word, pos + word.Length());
-
-                            if(pos != wxNOT_FOUND){
-                                wordCount++;
-                            }
-                        }
-
-                        word = wordFile.GetNextLine();
-
-                    } while(!wordFile.Eof());
-
-                    strings.Add(line  + "\t" + word + "\t" + wxString::Format(wxT("%i"), wordCount));
-                }
-                delete in_stream;
-            }
-
-            Progress->SetValue((Progress->GetValue() + linePercent));
-
-            line = urlFile.GetNextLine();
-
-        } while(!urlFile.Eof());
-
-        urlFile.Close();
-        wordFile.Close();
+        //Progress->SetValue((Progress->GetValue() + linePercent));
 
         this->Progress->SetValue(Progress->GetRange());
-        this->ListBox->Append(strings);
+        //this->ListBox->Append(strings);
     }
     else if(urlFileName == "" && wordFileName != "")
     {
@@ -255,6 +206,18 @@ void Web_ScannerFrame::OnLoad_Url_ButtonClick(wxCommandEvent& event)
 
         urlFileName = path;
         this->URL_TextCtrl->AppendText(urlFileName);
+
+        wxTextFile urlFile;
+        urlFile.Open(urlFileName);
+
+        urlList = new wxString[urlFile.GetLineCount()];
+        urlCount = urlFile.GetLineCount();
+        urlList[0] = urlFile.GetFirstLine();
+
+        for(size_t i = 1; i < urlFile.GetLineCount(); i++)
+        {
+           urlList[i] = urlFile.GetNextLine();
+        }
     }
     dialog.Close();
 }
@@ -276,6 +239,17 @@ void Web_ScannerFrame::OnLoad_Word_ButtonClick(wxCommandEvent& event)
 
         wordFileName = path;
         this->Word_TextCtrl->AppendText(wordFileName);
+
+        wxTextFile wordFile;
+        wordFile.Open(wordFileName);
+
+        wordList = new wxString[wordFile.GetLineCount()];
+
+        wordList[0] = wordFile.GetFirstLine();
+        for(size_t i = 1; i < wordFile.GetLineCount(); i++)
+        {
+           wordList[i] = wordFile.GetNextLine();
+        }
     }
     dialog.Close();
 }
@@ -283,4 +257,76 @@ void Web_ScannerFrame::OnLoad_Word_ButtonClick(wxCommandEvent& event)
 void Web_ScannerFrame::OnSpinCtrl1Change(wxSpinEvent& event)
 {
     threadCount = event.GetValue();
+//    int urlListLength = urlList->length();
+//
+//    threadStatus = new int[threadCount];
+//    if(threadCount < urlListLength)
+//    {
+//        threadList = new MyThread*[threadCount];
+//
+//        int amountPerThread = urlListLength / threadCount;
+//
+//        for(int i = 0; i < threadCount; i+=amountPerThread)
+//        {
+//            threadList[i] = new MyThread(i, i + amountPerThread, urlData, wordList, threadStatus);
+//            threadStatus[i] = 0;
+//        }
+//    }
+}
+
+void Web_ScannerFrame::ThreadIdle(wxIdleEvent& event)
+{
+    int count = 0;
+    for(int i = 0; i < threadCount; i++)
+    {
+        if(threadStatus[i] == 1)
+        {
+            count++;
+        }
+    }
+
+     Progress->SetValue((count * 100) / threadCount);
+}
+
+void Web_ScannerFrame::DownloadUrlData()
+{
+
+    urlData = new wxArrayString [urlCount];
+
+    for(int i = 0; i < urlCount ; i++ )
+    {
+        wxURL *url = new wxURL(urlList[i]);
+        if (url->GetError() == wxURL_NOERR)
+        {
+             wxString data;
+
+             wxInputStream *in_stream = url->GetInputStream();
+
+             if(in_stream && in_stream->IsOk())
+             {
+                 wxStringOutputStream html_stream(&data);
+                 in_stream->Read(html_stream);
+
+                 urlData->Append(data);
+             }
+        }
+    }
+
+}
+
+void Web_ScannerFrame::InitializeThreads()
+{
+    threadStatus = new int[threadCount];
+    if(threadCount < urlCount)
+    {
+        threadList = new MyThread*[threadCount];
+
+        int amountPerThread = urlCount / threadCount;
+
+        for(int i = 0; i < threadCount; i+=amountPerThread - 1)
+        {
+            threadList[i] = new MyThread(i, i + amountPerThread, urlData, wordList, threadStatus);
+            threadStatus[i] = 0;
+        }
+    }
 }

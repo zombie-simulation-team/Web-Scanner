@@ -24,18 +24,28 @@
 #include <wx/listbox.h>
 //*)
 
+#include "MyThread.h"
+
 
 class Web_ScannerFrame: public wxFrame
 {
     public:
-
         Web_ScannerFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~Web_ScannerFrame();
+        wxString Download(wxString url);
 
     private:
         wxString urlFileName;
         wxString wordFileName;
         int threadCount;
+        wxString *urlList;
+        wxString *wordList;
+        wxArrayString *urlData;
+        MyThread **threadList;
+        int *threadStatus;
+        int urlCount;
+
+        void ThreadIdle(wxIdleEvent& event);
 
         //(*Handlers(Web_ScannerFrame)
         void OnQuit(wxCommandEvent& event);
@@ -47,6 +57,8 @@ class Web_ScannerFrame: public wxFrame
         void OnLoad_Word_ButtonClick(wxCommandEvent& event);
         void OnListBoxSelect(wxCommandEvent& event);
         void OnSpinCtrl1Change(wxSpinEvent& event);
+        void DownloadUrlData();
+        void InitializeThreads();
         //*)
 
         //(*Identifiers(Web_ScannerFrame)
