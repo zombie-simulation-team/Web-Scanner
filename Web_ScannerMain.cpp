@@ -62,12 +62,16 @@ const long Web_ScannerFrame::idMenuQuit = wxNewId();
 const long Web_ScannerFrame::idMenuAbout = wxNewId();
 const long Web_ScannerFrame::ID_STATUSBAR1 = wxNewId();
 //*)
-
+wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_COMPLETED, wxThreadEvent);
 BEGIN_EVENT_TABLE(Web_ScannerFrame,wxFrame)
     //(*EventTable(Web_ScannerFrame)
-        //EVT_IDLE(Web_ScannerFrame::ThreadIdle)
+
     //*)
+    //EVT_IDLE(Web_ScannerFrame::ThreadIdle)
+    EVT_THREAD( wxID_ANY, Web_ScannerFrame::ThreadIdle)
 END_EVENT_TABLE()
+
+
 
 Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
 {
@@ -75,6 +79,8 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
     wordFileName = "";
     threadCount = 1;
     urlCount = 0;
+    started = false;
+
     //(*Initialize(Web_ScannerFrame)
     wxMenuItem* MenuItem2;
     wxMenuItem* MenuItem1;
@@ -128,6 +134,7 @@ Web_ScannerFrame::Web_ScannerFrame(wxWindow* parent,wxWindowID id)
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&Web_ScannerFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&Web_ScannerFrame::OnAbout);
     //*)
+    Connect(wxID_ANY,wxEVT_THREAD,(wxObjectEventFunction)&Web_ScannerFrame::ThreadIdle);
 }
 
 Web_ScannerFrame::~Web_ScannerFrame()
@@ -153,29 +160,16 @@ void Web_ScannerFrame::OnGo_ButtonClick(wxCommandEvent& event)
     if(urlFileName != "" && wordFileName != "")
     {
         wxArrayString strings;
-        DownloadUrlData();
+        //DownloadUrlData();
         InitializeThreads();
-
-        //int urlCount = 1;
-        int linePercent = Progress->GetRange() / threadCount;
-        Progress->SetValue(0);
 
         for(int i = 0; i < threadCount; i++){
             threadList[i]->Create();
             threadList[i]->Run();
         }
 
-        //Progress->SetValue((Progress->GetValue() + linePercent));
-
-        this->Progress->SetValue(Progress->GetRange());
-
-        int index = 0;
-        for(int i = 0; i < urlCount; i++)
-        {
-            strings.Add(wxString::Format(wxT("%i"), i) + "\t" + urlList[i]  + "\t" +
-                        "\t" + wxString::Format(wxT("%i"), threadStatus[i]));
-            this->ListBox->Append(strings);
-        }
+        Progress->SetValue(0);
+        started = true;
     }
     else if(urlFileName == "" && wordFileName != "")
     {
@@ -223,6 +217,7 @@ void Web_ScannerFrame::OnLoad_Url_ButtonClick(wxCommandEvent& event)
         urlCount = urlFile.GetLineCount();
         urlList[0] = urlFile.GetFirstLine();
 
+
         for(size_t i = 1; i < urlFile.GetLineCount(); i++)
         {
            urlList[i] = urlFile.GetNextLine();
@@ -267,41 +262,37 @@ void Web_ScannerFrame::OnLoad_Word_ButtonClick(wxCommandEvent& event)
 void Web_ScannerFrame::OnSpinCtrl1Change(wxSpinEvent& event)
 {
     threadCount = event.GetValue();
-//    int urlListLength = urlList->length();
-//
-//    threadStatus = new int[threadCount];
-//    if(threadCount < urlListLength)
-//    {
-//        threadList = new MyThread*[threadCount];
-//
-//        int amountPerThread = urlListLength / threadCount;
-//
-//        for(int i = 0; i < threadCount; i+=amountPerThread)
-//        {
-//            threadList[i] = new MyThread(i, i + amountPerThread, urlData, wordList, threadStatus);
-//            threadStatus[i] = 0;
-//        }
-//    }
 }
 
-void Web_ScannerFrame::ThreadIdle(wxIdleEvent& event)
+void Web_ScannerFrame::ThreadIdle(wxThreadEvent& event)
 {
-    int temp = 0;
-    wxArrayString strings;
-
-    for(int i = 0; i < urlCount; i++)
+    if(started)
     {
-        if(threadStatus[i] >= 1)
+        int counter = 0;
+        wxArrayString strings;
+
+        for(int i = 0; i < threadCount; i++)
         {
-            temp++;
-            strings.Add(urlList[i]  + "\t" + "\t" + wxString::Format(wxT("%i"), threadStatus[i]));
-            this->ListBox->Append(strings);
+            if(threadStatus[i] == 1)
+            {
+                counter++;
+            }
+        }
+        Progress->SetValue((counter * 100) / threadCount);
+
+        if(counter == threadCount)
+        {
+             for(int i = 0; i < urlCount; i++)
+                    strings.Add(urlList[i]  + "\t" + "\t" + wxString::Format(wxT("%i"), wordCounter[i]));
+                this->ListBox->Append(strings);
         }
     }
-
-     Progress->SetValue((temp * 100) / threadCount);
+    else
+    {
+    }
+     wxYieldIfNeeded();
 }
-
+/*
 void Web_ScannerFrame::DownloadUrlData()
 {
 
@@ -325,12 +316,13 @@ void Web_ScannerFrame::DownloadUrlData()
              }
         }
     }
-
-}
+}*/
 
 void Web_ScannerFrame::InitializeThreads()
 {
     threadStatus = new int[threadCount];
+    urlObjects = new wxURL*[threadCount];
+
     if(threadCount < urlCount)
     {
         threadList = new MyThread*[threadCount];
@@ -340,8 +332,10 @@ void Web_ScannerFrame::InitializeThreads()
         int index = 0;
         for(int i = 0; i < threadCount; i++)
         {
-            threadList[i] = new MyThread(index, index + amountPerThread - 1, urlData,
-                                         wordList, wordCounter, threadStatus, i);
+            urlObjects[i] = new wxURL();
+            (urlObjects[i]->GetProtocol()).Initialize();
+            threadList[i] = new MyThread(this, index, index + amountPerThread - 1,
+                                         urlObjects[i], urlList, wordList, wordCounter, threadStatus, i);
             threadStatus[i] = 0;
             index = index + amountPerThread;
         }

@@ -27,6 +27,7 @@
 #include "MyThread.h"
 
 
+
 class Web_ScannerFrame: public wxFrame
 {
     public:
@@ -40,13 +41,14 @@ class Web_ScannerFrame: public wxFrame
         int threadCount;
         wxString *urlList;
         wxString *wordList;
-        wxString *urlData;
+        wxURL **urlObjects;
         MyThread **threadList;
         int *threadStatus;
         int *wordCounter;
         int urlCount;
+        bool started;
 
-        void ThreadIdle(wxIdleEvent& event);
+        void ThreadIdle(wxThreadEvent& event);
 
         //(*Handlers(Web_ScannerFrame)
         void OnQuit(wxCommandEvent& event);

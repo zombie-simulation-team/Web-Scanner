@@ -7,23 +7,39 @@
 #include <wx/stream.h>
 #include <wx/sstream.h>
 
+DECLARE_EVENT_TYPE(wxEVT_MY_EVENT, -1)
+
 class MyThread : public wxThread
 {
 private:
     int start;
     int ending;
-    int progress;
+    wxURL *url;
+    wxString *urlList;
     wxString *wordList;
-    wxString *dataList;
+    wxString *data;
     int *statusList;
     int *wordCount;
     int threadNumber;
+    wxEvtHandler *eventHandler;
+    wxInputStream *in_stream;
 
 public:
-    MyThread(int start, int ending, wxString *dataList, wxString *wordList, int *wordCount, int *statusList, int);
+    MyThread(
+             wxEvtHandler *eventHandler,
+             int start,
+             int ending,
+             wxURL *url,
+             wxString *urlList,
+             wxString *wordList,
+             int *wordCount,
+             int *statusList,
+             int);
     virtual void *Entry();
     virtual ~MyThread();
-    wxString Download(wxString line);
+    void Download(wxString wxUrl);
+    int GetDataStart();
+    int GetDataEnd();
 };
 
 #endif // MYTHREAD_H

@@ -1,15 +1,28 @@
 #include "MyThread.h"
 
-MyThread::MyThread(int start, int ending, wxString *dataList, wxString *wordList, int *wordCount, int *statusList, int threadNumber)
-    : wxThread(wxTHREAD_JOINABLE)
+DEFINE_EVENT_TYPE(wxEVT_MY_EVENT)
+
+MyThread::MyThread(
+                   wxEvtHandler *eventHandler,
+                   int start,
+                   int ending,
+                   wxURL *url,
+                   wxString *urlList,
+                   wxString *wordList,
+                   int *wordCount,
+                   int *statusList,
+                   int threadNumber)
+    : wxThread()
 {
     this->start = start;
     this->ending = ending;
-    this->dataList = dataList;
+    this->url = url;
+    this->urlList = urlList;
     this->wordList = wordList;
     this->statusList = statusList;
     this->wordCount = wordCount;
     this->threadNumber = threadNumber;
+    this->eventHandler = eventHandler;
 }
 
 MyThread::~MyThread()
@@ -18,19 +31,19 @@ MyThread::~MyThread()
 
 void *MyThread::Entry()
 {
-    int wordCount = 0;
-
-    for(size_t i = start; i < ending; i++)
+    for(size_t i = start; i < ending - 1; i++)
     {
-        wxString data = dataList[i];
+        wxString u = urlList[i];
+        int wordCount = 0;
+        Download(urlList[i]);
         for(size_t j = 0; j < wordList->length(); j++)
         {
             wxString word = wordList[j];
             size_t pos = 0;
 
-            while(pos < data.Length())
+            while(pos < data->Length())
             {
-                pos = data.find(word, pos + word.Length());
+                pos = data->find(word, pos + word.Length());
 
                 if(pos != wxNOT_FOUND){
                     wordCount++;
@@ -41,27 +54,39 @@ void *MyThread::Entry()
     }
     statusList[threadNumber] = 1;
 
-    return 0;
+    delete data;
+    data = NULL;
+
+    wxThreadEvent *event = new wxThreadEvent();
+    eventHandler->AddPendingEvent(*event);
+
+    return NULL;
 }
 
-wxString MyThread::Download(wxString urlLine)
+int MyThread::GetDataStart()
 {
-    wxURL *url = new wxURL(urlLine);
+    return start;
+}
 
-    if (url->GetError() == wxURL_NOERR)
+int MyThread::GetDataEnd()
+{
+    return ending;
+}
+
+void MyThread::Download(wxString theUrl)
+{
+    url->SetURL(theUrl);
+
+    if (this->url->GetError() == wxURL_NOERR)
     {
-         wxString data;
+         data = new wxString();
 
-         wxInputStream *in_stream = url->GetInputStream();
+         in_stream = url->GetInputStream();
 
          if(in_stream && in_stream->IsOk())
          {
-             wxStringOutputStream html_stream(&data);
+             wxStringOutputStream html_stream(data);
              in_stream->Read(html_stream);
-
-             return data;
          }
     }
-
-    return "";
 }
